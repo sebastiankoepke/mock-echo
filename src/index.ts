@@ -10,6 +10,10 @@ class Channel {
         this.events[eventName] = fn;
         return this
     }
+    stopListening (eventName: string) {
+        delete this.events[eventName]
+        return this
+    }
     broadcast (eventName, event) {
         if (typeof this.events[eventName] === 'undefined') {
             console.error(`Channel didn't listen to event: ${eventName}`);
@@ -170,7 +174,19 @@ class MockEcho {
         let presenceChannel = this.listenChannelByFullName(`presence-${channelName}`)
         return presenceChannel
     }
+    leave(channelName) {
+        if (typeof this.channels[channelName] !== 'undefined') {
+            delete this.channels[channelName]
+        }
+        if (typeof this.channels["private-" + channelName] !== 'undefined') {
+            delete this.channels["private-" + channelName]
+        }
+        if (typeof this.channels["presence-" + channelName] !== 'undefined') {
+            delete this.channels["presence-" + channelName]
+        }
 
+        return this
+    }
     listenChannelByFullName(fullName) {
         if (typeof this.channels[fullName] === 'undefined') {
             if (fullName.startsWith('presence-')) {
